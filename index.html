@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paiera — Payment Infrastructure for the AI Era</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,6 +25,21 @@
   --r:        16px;
   --r-lg:     22px;
 }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+@keyframes slideLeft{ from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+@keyframes orb      { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-48%,-52%) scale(1.08)} }
+
+.anim-fade-up   { opacity:0; animation: fadeUp  .7s cubic-bezier(.22,1,.36,1) forwards; }
+.anim-fade-in   { opacity:0; animation: fadeIn  .6s ease forwards; }
+.anim-scale-in  { opacity:0; animation: scaleIn .65s cubic-bezier(.22,1,.36,1) forwards; }
+.anim-slide-left{ opacity:0; animation: slideLeft .65s cubic-bezier(.22,1,.36,1) forwards; }
+
+[data-stagger] { opacity:0; }
+[data-stagger].visible { animation: fadeUp .65s cubic-bezier(.22,1,.36,1) forwards; }
 
 html { scroll-behavior: smooth; }
 body {
@@ -118,9 +133,14 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
 }
 .nav-logo {
-  font-size: 20px; font-weight: 900; letter-spacing: -.02em;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 22px; font-weight: 700; letter-spacing: -.01em;
   color: white; text-decoration: none;
-  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  display: flex; align-items: center; gap: 0;
+}
+.logo-e {
+  color: #3b8ef0;
+  font-weight: 700;
 }
 .nav-links { display: flex; gap: 28px; list-style: none; }
 .nav-links a {
@@ -393,9 +413,10 @@ footer {
   margin-bottom: 32px;
 }
 .footer-logo {
-  font-size: 20px; font-weight: 900; letter-spacing: -.02em;
-  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-decoration: none;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 22px; font-weight: 700; letter-spacing: -.01em;
+  color: white; text-decoration: none;
+  display: flex; align-items: center; gap: 0;
 }
 .footer-tagline { font-size: 13px; color: var(--soft); margin-top: 6px; max-width: 280px; line-height: 1.6; }
 .footer-links { display: flex; gap: 24px; }
@@ -429,7 +450,7 @@ footer {
 <!-- ── NAV ── -->
 <nav>
   <div class="nav-in">
-    <a class="nav-logo" href="#">Paiera</a>
+    <a class="nav-logo" href="#">Pai<span class="logo-e">e</span>ra</a>
     <ul class="nav-links">
       <li><a href="#products">Products</a></li>
       <li><a href="#solutions">Solutions</a></li>
@@ -476,17 +497,17 @@ footer {
       <p>One platform for global funds. No switching between platforms—full asset visibility.</p>
     </div>
     <div class="why-cards">
-      <div class="why-card">
+      <div class="why-card" data-stagger data-delay="0">
         <div class="wc-icon">💳</div>
         <div class="wc-title">Digital Card Issuance</div>
         <div class="wc-body">Ready-to-use stablecoin cards for millions of merchants. API-driven, high authorization rates, 24/7 availability.</div>
       </div>
-      <div class="why-card">
+      <div class="why-card" data-stagger data-delay="120">
         <div class="wc-icon">🌍</div>
         <div class="wc-title">Global Payments</div>
         <div class="wc-body">Direct connection to emerging markets. Lower costs, faster settlement. Fiat and digital assets flow both ways.</div>
       </div>
-      <div class="why-card">
+      <div class="why-card" data-stagger data-delay="240">
         <div class="wc-icon">⚡</div>
         <div class="wc-title">AI Agent Payments</div>
         <div class="wc-body">Native Agent payment design. Programmable auth, intelligent routing, millisecond response—infrastructure ready for AI.</div>
@@ -505,7 +526,7 @@ footer {
     </div>
     <div class="products-grid">
       <!-- Digital Asset Exchanges -->
-      <div class="prod-card">
+      <div class="prod-card" data-stagger data-delay="0">
         <div class="prod-head">
           <div class="prod-icon ic-blue">🏦</div>
           <div class="prod-head-text">
@@ -525,7 +546,7 @@ footer {
         </div>
       </div>
       <!-- Cross-border Enterprise -->
-      <div class="prod-card">
+      <div class="prod-card" data-stagger data-delay="120">
         <div class="prod-head">
           <div class="prod-icon ic-purple">🏢</div>
           <div class="prod-head-text">
@@ -545,7 +566,7 @@ footer {
         </div>
       </div>
       <!-- Individual Users -->
-      <div class="prod-card">
+      <div class="prod-card" data-stagger data-delay="240">
         <div class="prod-head">
           <div class="prod-icon ic-green">👤</div>
           <div class="prod-head-text">
@@ -622,7 +643,7 @@ footer {
       <p>Deep vertical expertise, precise solutions for every industry.</p>
     </div>
     <div class="voices-grid">
-      <div class="voice-card">
+      <div class="voice-card" data-stagger data-delay="0">
         <span class="quote-mark">"</span>
         <div class="voice-text">Multi-currency payments used to mean jumping between systems. Now one platform handles everything—we focus on growth.</div>
         <div class="voice-source">
@@ -630,7 +651,7 @@ footer {
           <div class="voice-role">Operations Director</div>
         </div>
       </div>
-      <div class="voice-card">
+      <div class="voice-card" data-stagger data-delay="150">
         <span class="quote-mark">"</span>
         <div class="voice-text">Payment failures used to stall campaigns. Paiera's cards deploy fast with 24/7 stability—our foundation for scale.</div>
         <div class="voice-source">
@@ -638,7 +659,7 @@ footer {
           <div class="voice-role">Growth Lead</div>
         </div>
       </div>
-      <div class="voice-card">
+      <div class="voice-card" data-stagger data-delay="300">
         <span class="quote-mark">"</span>
         <div class="voice-text">Stablecoin payments solved the slow, expensive traditional problem. Real-time settlement gives us confidence in emerging markets.</div>
         <div class="voice-source">
@@ -667,7 +688,7 @@ footer {
       <div class="sol-tab">AI Apps</div>
     </div>
     <div class="sol-grid">
-      <div class="sol-card">
+      <div class="sol-card" data-stagger data-delay="0">
         <div class="sol-head">
           <div class="sol-icon">📊</div>
           <div class="sol-name">Commodities Trading</div>
@@ -678,7 +699,7 @@ footer {
           <div class="sf"><strong>Compliance</strong><span>Transparent large transfers</span></div>
         </div>
       </div>
-      <div class="sol-card">
+      <div class="sol-card" data-stagger data-delay="100">
         <div class="sol-head">
           <div class="sol-icon">🛒</div>
           <div class="sol-name">B2B E-commerce</div>
@@ -689,7 +710,7 @@ footer {
           <div class="sf"><strong>Corporate Cards</strong><span>24/7 stable for procurement &amp; ads</span></div>
         </div>
       </div>
-      <div class="sol-card">
+      <div class="sol-card" data-stagger data-delay="200">
         <div class="sol-head">
           <div class="sol-icon">🔗</div>
           <div class="sol-name">Web3 Ecosystem</div>
@@ -700,7 +721,7 @@ footer {
           <div class="sf"><strong>Community Finance</strong><span>Payroll &amp; asset operations</span></div>
         </div>
       </div>
-      <div class="sol-card" style="border-color:rgba(124,92,246,.25);">
+      <div class="sol-card" data-stagger data-delay="300" style="border-color:rgba(124,92,246,.25);">
         <div class="sol-head">
           <div class="sol-icon" style="background:rgba(124,92,246,.15);border-color:rgba(124,92,246,.25);">🤖</div>
           <div class="sol-name">AI Applications</div>
@@ -750,7 +771,7 @@ footer {
         <h2>Start a Conversation</h2>
         <p>Exchange, enterprise, or AI developer—we'd love to connect.</p>
         <div class="contact-items">
-          <div class="ci"><div class="ci-icon">✉️</div><div class="ci-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ceada1a0baafadba8ebeafa7abbcafe0afa7">[email&#160;protected]</a></div></div>
+          <div class="ci"><div class="ci-icon">✉️</div><div class="ci-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9efdf1f0eafffdeadeeefff7fbecffb0fff7">[email&#160;protected]</a></div></div>
           <div class="ci"><div class="ci-icon">🌐</div><div class="ci-text">paiera.ai</div></div>
           <div class="ci"><div class="ci-icon">📍</div><div class="ci-text">Global Operations</div></div>
         </div>
@@ -760,7 +781,7 @@ footer {
         <input class="cf-field" type="email" placeholder="Email address">
         <input class="cf-field" type="text" placeholder="Company">
         <textarea class="cf-field ta" placeholder="Tell us about your needs..."></textarea>
-        <a href="/cdn-cgi/l/email-protection#c3a0acadb7a2a0b783b3a2aaa6b1a2eda2aa" class="btn btn-grad" style="justify-content:center;">Send Message</a>
+        <a href="/cdn-cgi/l/email-protection#690a06071d080a1d291908000c1b08470800" class="btn btn-grad" style="justify-content:center;">Send Message</a>
       </div>
     </div>
   </div>
@@ -771,7 +792,7 @@ footer {
   <div class="wrap">
     <div class="footer-in">
       <div>
-        <a class="footer-logo" href="#">Paiera</a>
+        <a class="footer-logo" href="#" style="display:flex;align-items:center;gap:0;text-decoration:none;color:white;">Pai<span class="logo-e">e</span>ra</a>
         <div class="footer-tagline">Pay · AI · Era — New infrastructure for the human-AI payment era. Stablecoin-native platform, driving borderless capital flow.</div>
       </div>
       <div class="footer-links">
@@ -783,12 +804,67 @@ footer {
     </div>
     <div class="footer-bot">
       <span>© 2026 Paiera. All rights reserved.</span>
-      <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afccc0c1dbceccdbefdfcec6caddce81cec6">[email&#160;protected]</a></span>
+      <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="77141819031614033707161e12051659161e">[email&#160;protected]</a></span>
     </div>
   </div>
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const delay = el.dataset.delay || 0;
+      setTimeout(() => { el.classList.add('visible'); }, delay);
+      observer.unobserve(el);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('[data-stagger]').forEach(el => observer.observe(el));
+
+// ── STAT COUNTER ──
+function animateCounter(el, target, suffix='', duration=1600) {
+  const isText = isNaN(parseFloat(target));
+  if (isText) { el.textContent = target; return; }
+  const num = parseFloat(target);
+  const start = performance.now();
+  const step = (now) => {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = (num * ease).toFixed(0) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target + suffix;
+  };
+  requestAnimationFrame(step);
+}
+
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.stat-val').forEach(v => {
+        const raw = v.textContent;
+        if (raw.includes('150')) animateCounter(v, '150', '+');
+        else if (raw.includes('24')) { v.textContent = '24/7'; }
+        else if (raw.includes('T+0')) { v.textContent = 'T+0'; }
+      });
+      statsObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObs.observe(statsEl);
+
+// ── HERO ENTRANCE ──
+document.querySelectorAll('.hero-badge, .hero-sub-title, .hero h1, .hero-lead, .hero-body, .hero-btns, .hero-stats').forEach((el, i) => {
+  el.style.animation = `fadeUp .75s cubic-bezier(.22,1,.36,1) ${i * 0.1}s both`;
+});
+
+// ── FLOATING ORB ──
+const orb = document.querySelector('.hero-glow');
+if (orb) orb.style.animation = 'orb 8s ease-in-out infinite';
+
 // Tab switching
 document.querySelectorAll('.sol-tab').forEach(tab => {
   tab.addEventListener('click', () => {
