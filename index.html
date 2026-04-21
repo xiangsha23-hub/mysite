@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiera — Payment Infrastructure for the AI Era</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #080c1a;
+  --bg2:      #0c1022;
+  --surf:     #0f1428;
+  --surf2:    #141830;
+  --border:   rgba(255,255,255,.08);
+  --border2:  rgba(255,255,255,.12);
+  --blue:     #4d8bf5;
+  --purple:   #7c5cf6;
+  --grad:     linear-gradient(135deg, #4d8bf5 0%, #7c5cf6 100%);
+  --grad-h:   linear-gradient(135deg, #6da0ff 0%, #9b7aff 100%);
+  --white:    #ffffff;
+  --mid:      rgba(255,255,255,.58);
+  --soft:     rgba(255,255,255,.35);
+  --r:        16px;
+  --r-lg:     22px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* MESH BG */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%,  rgba(77,139,245,.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 85% 15%,   rgba(124,92,246,.1)  0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 10% 80%,   rgba(77,139,245,.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 85%,   rgba(124,92,246,.08) 0%, transparent 55%);
+}
+
+/* GRID TEXTURE */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 48px; }
+
+/* EYEBROW */
+.ey {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 18px;
+}
+.ey::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+
+/* SECTION HEADER */
+.sh { text-align: center; margin-bottom: 56px; }
+.sh h2 {
+  font-size: clamp(28px, 3vw, 42px); font-weight: 800;
+  line-height: 1.16; letter-spacing: -.028em; color: var(--white);
+  text-wrap: balance; margin-bottom: 14px;
+}
+.sh p { font-size: 15.5px; line-height: 1.7; color: var(--mid); max-width: 480px; margin: 0 auto; }
+
+/* TAG PILL */
+.tag {
+  display: inline-block; padding: 4px 12px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600; border: 1px solid var(--border2);
+  color: var(--soft); background: rgba(255,255,255,.04);
+}
+.tag-blue   { background: rgba(77,139,245,.12); border-color: rgba(77,139,245,.3); color: #7aadff; }
+.tag-purple { background: rgba(124,92,246,.12); border-color: rgba(124,92,246,.3); color: #a889ff; }
+.tag-green  { background: rgba(52,211,153,.1);  border-color: rgba(52,211,153,.25); color: #5eecba; }
+.tag-amber  { background: rgba(251,191,36,.1);  border-color: rgba(251,191,36,.25); color: #fcd165; }
+
+/* BUTTON */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 22px; border-radius: 9px; font-size: 13.5px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: transform .15s, opacity .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-grad {
+  background: var(--grad); color: white;
+  box-shadow: 0 4px 20px rgba(77,139,245,.3);
+}
+.btn-grad:hover { background: var(--grad-h); box-shadow: 0 6px 28px rgba(77,139,245,.4); }
+.btn-ghost {
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.8);
+  border: 1px solid var(--border2); backdrop-filter: blur(8px);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.1); }
+
+/* ════════════ NAV ════════════ */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,12,26,.88); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  height: 60px; display: flex; align-items: center;
+}
+.nav-in {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-size: 20px; font-weight: 900; letter-spacing: -.02em;
+  color: white; text-decoration: none;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-size: 14px; font-weight: 500; color: var(--mid);
+  text-decoration: none; transition: color .15s;
+}
+.nav-links a:hover { color: white; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.lang-toggle {
+  display: flex; border: 1px solid var(--border2); border-radius: 7px; overflow: hidden;
+}
+.lang-btn {
+  font-size: 12px; font-weight: 600; padding: 5px 10px; cursor: pointer;
+  color: var(--soft); transition: all .15s; background: none; border: none;
+}
+.lang-btn.active { background: rgba(255,255,255,.1); color: white; }
+
+/* ════════════ HERO ════════════ */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 90vh; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 100px 48px 80px; overflow: hidden;
+}
+.hero-glow {
+  position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(77,139,245,.18) 0%, rgba(124,92,246,.1) 40%, transparent 70%);
+  pointer-events: none;
+}
+.hero-in { position: relative; z-index: 1; max-width: 760px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(77,139,245,.12); border: 1px solid rgba(77,139,245,.28);
+  border-radius: 999px; padding: 6px 18px;
+  font-size: 12px; font-weight: 600; color: #7aadff;
+  margin-bottom: 28px; backdrop-filter: blur(8px);
+}
+.hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+.hero-sub-title {
+  font-size: clamp(18px, 2.2vw, 26px); font-weight: 700;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 10px; letter-spacing: -.01em;
+}
+.hero h1 {
+  font-size: clamp(38px, 5.5vw, 68px); font-weight: 900;
+  line-height: 1.06; letter-spacing: -.035em; color: white;
+  margin-bottom: 22px; text-wrap: balance;
+}
+.hero-lead {
+  font-size: 18px; font-weight: 500; color: var(--mid);
+  margin-bottom: 12px; line-height: 1.5;
+}
+.hero-body {
+  font-size: 15px; color: var(--soft); line-height: 1.7;
+  max-width: 500px; margin: 0 auto 40px;
+}
+.hero-btns { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 64px; }
+.hero-stats {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  border-top: 1px solid var(--border); padding-top: 40px;
+}
+.stat { flex: 1; text-align: center; padding: 0 32px; }
+.stat + .stat { border-left: 1px solid var(--border); }
+.stat-val {
+  font-size: clamp(28px, 3vw, 40px); font-weight: 900; letter-spacing: -.03em;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+.stat-lab { font-size: 13px; color: var(--soft); font-weight: 500; }
+
+/* ════════════ WHY ════════════ */
+.why { position: relative; z-index: 1; padding: 96px 0; }
+.why-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.why-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 32px 28px 36px;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  position: relative; overflow: hidden;
+}
+.why-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(135deg, rgba(77,139,245,.06) 0%, transparent 60%);
+  opacity: 0; transition: opacity .2s;
+}
+.why-card:hover { border-color: rgba(77,139,245,.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+.why-card:hover::before { opacity: 1; }
+.wc-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(77,139,245,.12); border: 1px solid rgba(77,139,245,.2);
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  margin-bottom: 22px;
+}
+.wc-title { font-size: 17px; font-weight: 700; color: white; margin-bottom: 10px; letter-spacing: -.01em; }
+.wc-body  { font-size: 14px; color: var(--mid); line-height: 1.68; }
+
+/* ════════════ PRODUCTS ════════════ */
+.products { position: relative; z-index: 1; padding: 0 0 96px; }
+.products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.prod-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 32px 30px 36px;
+  position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.prod-card:hover { border-color: rgba(255,255,255,.14); transform: translateY(-2px); }
+.prod-head {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.prod-icon {
+  width: 44px; height: 44px; border-radius: 11px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.ic-blue   { background: rgba(77,139,245,.15); border: 1px solid rgba(77,139,245,.25); }
+.ic-purple { background: rgba(124,92,246,.15); border: 1px solid rgba(124,92,246,.25); }
+.ic-green  { background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.22); }
+.ic-amber  { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.22); }
+.prod-head-text {}
+.prod-name { font-size: 17px; font-weight: 700; color: white; letter-spacing: -.01em; }
+.prod-badge-row { display: flex; gap: 6px; margin-top: 5px; }
+.prod-body { font-size: 14px; color: var(--mid); line-height: 1.68; margin-bottom: 20px; }
+.prod-features { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
+.pf {
+  display: flex; align-items: baseline; gap: 8px; font-size: 13.5px;
+}
+.pf strong { color: white; font-weight: 600; min-width: 0; flex-shrink: 0; }
+.pf span   { color: var(--soft); }
+.prod-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.prod-divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+/* ════════════ GLOBAL NETWORK ════════════ */
+.network { position: relative; z-index: 1; padding: 96px 0; }
+.network-inner { text-align: center; }
+.region-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.region-pill {
+  background: var(--surf2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 10px 24px;
+  font-size: 14px; font-weight: 700; color: white;
+  transition: border-color .15s, background .15s;
+  cursor: default;
+}
+.region-pill:hover { border-color: var(--blue); background: rgba(77,139,245,.08); }
+.asset-pills { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.asset-pill {
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 999px; padding: 6px 18px;
+  font-size: 13px; font-weight: 500; color: var(--mid);
+}
+
+/* ════════════ TESTIMONIALS ════════════ */
+.voices { position: relative; z-index: 1; padding: 0 0 96px; }
+.voices-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.voice-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 30px 26px 28px;
+}
+.quote-mark {
+  font-size: 36px; line-height: 1; color: var(--blue);
+  font-family: Georgia, serif; margin-bottom: 12px; display: block; opacity: .7;
+}
+.voice-text { font-size: 14.5px; line-height: 1.72; color: rgba(255,255,255,.7); margin-bottom: 22px; font-style: italic; }
+.voice-source { border-top: 1px solid var(--border); padding-top: 16px; }
+.voice-company { font-size: 13.5px; font-weight: 700; color: white; }
+.voice-role    { font-size: 12.5px; color: var(--soft); margin-top: 3px; }
+
+/* ════════════ SOLUTIONS ════════════ */
+.solutions { position: relative; z-index: 1; padding: 96px 0; background: rgba(255,255,255,.015); }
+.sol-tabs {
+  display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+}
+.sol-tab {
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 18px;
+  font-size: 13.5px; font-weight: 600; color: var(--soft);
+  cursor: pointer; transition: all .15s;
+}
+.sol-tab.active {
+  background: rgba(77,139,245,.15); border-color: rgba(77,139,245,.35);
+  color: var(--blue);
+}
+.sol-tab:hover:not(.active) { color: white; border-color: var(--border2); }
+.sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.sol-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 30px 28px;
+  transition: border-color .2s, transform .2s;
+}
+.sol-card:hover { border-color: rgba(255,255,255,.14); transform: translateY(-2px); }
+.sol-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.sol-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  background: rgba(77,139,245,.12); border: 1px solid rgba(77,139,245,.2);
+}
+.sol-name { font-size: 16px; font-weight: 700; color: white; }
+.sol-body { font-size: 13.5px; color: var(--mid); line-height: 1.68; margin-bottom: 16px; }
+.sol-features { display: flex; flex-direction: column; gap: 7px; }
+.sf {
+  display: flex; align-items: baseline; gap: 8px; font-size: 13px;
+}
+.sf strong { color: rgba(255,255,255,.8); font-weight: 600; }
+.sf span   { color: var(--soft); }
+
+/* ════════════ ABOUT ════════════ */
+.about { position: relative; z-index: 1; padding: 96px 0; }
+.about-inner { max-width: 720px; margin: 0 auto; text-align: center; }
+.about-inner h2 {
+  font-size: clamp(28px, 3vw, 42px); font-weight: 900;
+  letter-spacing: -.03em; line-height: 1.14; margin-bottom: 24px;
+}
+.about-inner p { font-size: 15.5px; color: var(--mid); line-height: 1.75; margin-bottom: 14px; }
+.about-pillars {
+  display: flex; gap: 0; margin-top: 52px;
+  background: var(--surf); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden;
+}
+.pillar {
+  flex: 1; text-align: center; padding: 32px 24px;
+  transition: background .2s;
+}
+.pillar:hover { background: rgba(255,255,255,.04); }
+.pillar + .pillar { border-left: 1px solid var(--border); }
+.pillar-val {
+  font-size: 28px; font-weight: 900; letter-spacing: -.02em;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.pillar-lab { font-size: 13px; color: var(--soft); }
+
+/* ════════════ CONTACT ════════════ */
+.contact { position: relative; z-index: 1; padding: 0 0 96px; }
+.contact-inner {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 64px 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+}
+.contact-left h2 {
+  font-size: clamp(26px, 3vw, 38px); font-weight: 800;
+  letter-spacing: -.025em; line-height: 1.18; margin-bottom: 12px;
+}
+.contact-left p { font-size: 15px; color: var(--mid); line-height: 1.7; margin-bottom: 28px; }
+.contact-items { display: flex; flex-direction: column; gap: 14px; }
+.ci {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+}
+.ci-icon {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  background: rgba(77,139,245,.12); border: 1px solid rgba(77,139,245,.2);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.ci-text { font-size: 14px; color: rgba(255,255,255,.8); font-weight: 500; }
+.contact-form { display: flex; flex-direction: column; gap: 14px; }
+.cf-field {
+  background: rgba(255,255,255,.05); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 13px 16px; font-size: 14px;
+  color: white; font-family: inherit; outline: none; transition: border-color .15s;
+}
+.cf-field::placeholder { color: var(--soft); }
+.cf-field:focus { border-color: rgba(77,139,245,.5); }
+.cf-field.ta { resize: vertical; min-height: 100px; }
+
+/* ════════════ FOOTER ════════════ */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border); padding: 48px 0 32px;
+}
+.footer-in {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+}
+.footer-logo {
+  font-size: 20px; font-weight: 900; letter-spacing: -.02em;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+.footer-tagline { font-size: 13px; color: var(--soft); margin-top: 6px; max-width: 280px; line-height: 1.6; }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13.5px; color: var(--soft); text-decoration: none; transition: color .15s; }
+.footer-links a:hover { color: white; }
+.footer-bot {
+  border-top: 1px solid var(--border); padding-top: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12.5px; color: rgba(255,255,255,.25);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .wrap { padding: 0 24px; }
+  .nav-in { padding: 0 24px; }
+  .nav-links { display: none; }
+  .why-cards, .products-grid, .voices-grid, .sol-grid,
+  .contact-inner { grid-template-columns: 1fr; }
+  .hero { padding: 80px 24px 64px; min-height: auto; }
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .stat + .stat { border-left: none; border-top: 1px solid var(--border); padding-top: 24px; }
+  .about-pillars { flex-direction: column; }
+  .pillar + .pillar { border-left: none; border-top: 1px solid var(--border); }
+  .footer-in { flex-direction: column; gap: 24px; align-items: flex-start; }
+  .contact-inner { padding: 40px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="#">Paiera</a>
+    <ul class="nav-links">
+      <li><a href="#products">Products</a></li>
+      <li><a href="#solutions">Solutions</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active">EN</button>
+        <button class="lang-btn">中文</button>
+      </div>
+      <a href="#contact" class="btn btn-grad" style="padding:8px 20px;font-size:13px;">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="hero-glow"></div>
+  <div class="hero-in">
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Payments for the AI Era</div>
+    <div class="hero-sub-title">Pay · AI · Era</div>
+    <h1>Payment Infrastructure<br>for the AI Era</h1>
+    <p class="hero-lead">Bridging Web2 and Web3, making global money flow simpler</p>
+    <p class="hero-body">Stablecoin-native platform integrating global payments, digital cards, and AI Agent payments. Experience digital finance growth with minimal friction.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn btn-grad">Get Started</a>
+      <a href="#products" class="btn btn-ghost">Explore Products</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-val">150+</div><div class="stat-lab">Countries &amp; Regions</div></div>
+      <div class="stat"><div class="stat-val">24/7</div><div class="stat-lab">24/7 Seamless Trading</div></div>
+      <div class="stat"><div class="stat-val">T+0</div><div class="stat-lab">Real-time Settlement</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY PAIERA ── -->
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="sh">
+      <div class="ey">Why Paiera</div>
+      <h2>Why Paiera</h2>
+      <p>One platform for global funds. No switching between platforms—full asset visibility.</p>
+    </div>
+    <div class="why-cards">
+      <div class="why-card">
+        <div class="wc-icon">💳</div>
+        <div class="wc-title">Digital Card Issuance</div>
+        <div class="wc-body">Ready-to-use stablecoin cards for millions of merchants. API-driven, high authorization rates, 24/7 availability.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">🌍</div>
+        <div class="wc-title">Global Payments</div>
+        <div class="wc-body">Direct connection to emerging markets. Lower costs, faster settlement. Fiat and digital assets flow both ways.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">⚡</div>
+        <div class="wc-title">AI Agent Payments</div>
+        <div class="wc-body">Native Agent payment design. Programmable auth, intelligent routing, millisecond response—infrastructure ready for AI.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRODUCTS ── -->
+<section class="products" id="products">
+  <div class="wrap">
+    <div class="sh">
+      <div class="ey">Products</div>
+      <h2>One-Stop Payment &amp; Financial Services</h2>
+      <p>Connecting all assets, driving borderless capital flow.</p>
+    </div>
+    <div class="products-grid">
+      <!-- Digital Asset Exchanges -->
+      <div class="prod-card">
+        <div class="prod-head">
+          <div class="prod-icon ic-blue">🏦</div>
+          <div class="prod-head-text">
+            <div class="prod-name">Digital Asset Exchanges</div>
+            <div class="prod-badge-row"><span class="tag tag-blue">Core</span></div>
+          </div>
+        </div>
+        <div class="prod-body">One-stop payment infrastructure for exchanges—from user spending to institutional settlement.</div>
+        <div class="prod-features">
+          <div class="pf"><strong>Co-branded Cards</strong><span>User spending channels, ecosystem liquidity</span></div>
+          <div class="pf"><strong>Fiat On/Off-ramp</strong><span>Compliant channels, better retention</span></div>
+          <div class="pf"><strong>Institutional Settlement</strong><span>Global fund aggregation &amp; operations</span></div>
+        </div>
+        <div class="prod-divider"></div>
+        <div class="prod-tags">
+          <span class="tag">VCC</span><span class="tag">Fiat Channels</span><span class="tag">API</span><span class="tag">White-label</span>
+        </div>
+      </div>
+      <!-- Cross-border Enterprise -->
+      <div class="prod-card">
+        <div class="prod-head">
+          <div class="prod-icon ic-purple">🏢</div>
+          <div class="prod-head-text">
+            <div class="prod-name">Cross-border Enterprise</div>
+            <div class="prod-badge-row"><span class="tag tag-purple">Global</span></div>
+          </div>
+        </div>
+        <div class="prod-body">Stablecoin cross-border solutions for e-commerce and trade—global business at local speed.</div>
+        <div class="prod-features">
+          <div class="pf"><strong>Global Acquiring</strong><span>Major fiat and digital assets</span></div>
+          <div class="pf"><strong>T+0 Settlement</strong><span>Instant fund availability</span></div>
+          <div class="pf"><strong>Rate Lock</strong><span>24/7 quotes, hedge FX risk</span></div>
+        </div>
+        <div class="prod-divider"></div>
+        <div class="prod-tags">
+          <span class="tag">Collect</span><span class="tag">Pay</span><span class="tag">FX</span><span class="tag">Treasury</span>
+        </div>
+      </div>
+      <!-- Individual Users -->
+      <div class="prod-card">
+        <div class="prod-head">
+          <div class="prod-icon ic-green">👤</div>
+          <div class="prod-head-text">
+            <div class="prod-name">Individual Users</div>
+            <div class="prod-badge-row"><span class="tag tag-green">Premium</span></div>
+          </div>
+        </div>
+        <div class="prod-body">Spending outlet for digital asset holders. Spend stablecoins directly—simple, transparent, no hidden fees.</div>
+        <div class="prod-features">
+          <div class="pf"><strong>Stablecoin Card</strong><span>Global acceptance, instant activation</span></div>
+          <div class="pf"><strong>Multi-chain Wallet</strong><span>One-stop asset management</span></div>
+          <div class="pf"><strong>Local On-ramp</strong><span>Convenient fiat deposits</span></div>
+        </div>
+        <div class="prod-divider"></div>
+        <div class="prod-tags">
+          <span class="tag">Wallet</span><span class="tag">Earn</span><span class="tag">On-ramp</span><span class="tag">Multi-chain</span>
+        </div>
+      </div>
+      <!-- AI Agent Payments -->
+      <div class="prod-card" style="border-color: rgba(124,92,246,.25); background: linear-gradient(135deg, rgba(124,92,246,.06) 0%, var(--surf) 60%);">
+        <div class="prod-head">
+          <div class="prod-icon ic-amber">⚡</div>
+          <div class="prod-head-text">
+            <div class="prod-name">AI Agent Payments</div>
+            <div class="prod-badge-row"><span class="tag tag-amber">Frontier</span></div>
+          </div>
+        </div>
+        <div class="prod-body">When AI becomes the primary payer, traditional systems need rethinking. Paiera was built for this moment.</div>
+        <div class="prod-features">
+          <div class="pf"><strong>Autonomous Capability</strong><span>AI agents invoke payments independently</span></div>
+          <div class="pf"><strong>Agent Wallet</strong><span>Pre-set auth boundaries &amp; risk controls</span></div>
+          <div class="pf"><strong>Zero-friction</strong><span>Millisecond response at scale</span></div>
+        </div>
+        <div class="prod-divider"></div>
+        <div class="prod-tags">
+          <span class="tag tag-purple">Agent API</span><span class="tag tag-purple">MCP Server</span><span class="tag tag-purple">Programmable Auth</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GLOBAL NETWORK ── -->
+<section class="network" id="network">
+  <div class="wrap">
+    <div class="network-inner">
+      <div class="ey">Global Network</div>
+      <h2 style="font-size:clamp(28px,3vw,42px);font-weight:800;letter-spacing:-.028em;margin-bottom:14px;text-wrap:balance;">Connecting Emerging Markets</h2>
+      <p style="font-size:15.5px;color:var(--mid);line-height:1.7;max-width:480px;margin:0 auto 44px;">Direct connection to Asia, Africa, Middle East, LatAm, Europe—instant payments like local business.</p>
+      <div class="region-pills" style="margin-bottom:28px;">
+        <div class="region-pill">Asia</div>
+        <div class="region-pill">Middle East</div>
+        <div class="region-pill">Africa</div>
+        <div class="region-pill">LatAm</div>
+        <div class="region-pill">Europe</div>
+      </div>
+      <div class="asset-pills">
+        <span class="asset-pill">Major Fiat</span>
+        <span class="asset-pill">Stablecoins</span>
+        <span class="asset-pill">Major Crypto</span>
+        <span class="asset-pill">Alt Coins</span>
+        <span class="asset-pill">RWA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CUSTOMER VOICES ── -->
+<section class="voices" id="voices">
+  <div class="wrap">
+    <div class="sh">
+      <div class="ey">Voices</div>
+      <h2>Customer Voices</h2>
+      <p>Deep vertical expertise, precise solutions for every industry.</p>
+    </div>
+    <div class="voices-grid">
+      <div class="voice-card">
+        <span class="quote-mark">"</span>
+        <div class="voice-text">Multi-currency payments used to mean jumping between systems. Now one platform handles everything—we focus on growth.</div>
+        <div class="voice-source">
+          <div class="voice-company">Cross-border E-commerce</div>
+          <div class="voice-role">Operations Director</div>
+        </div>
+      </div>
+      <div class="voice-card">
+        <span class="quote-mark">"</span>
+        <div class="voice-text">Payment failures used to stall campaigns. Paiera's cards deploy fast with 24/7 stability—our foundation for scale.</div>
+        <div class="voice-source">
+          <div class="voice-company">Digital Services</div>
+          <div class="voice-role">Growth Lead</div>
+        </div>
+      </div>
+      <div class="voice-card">
+        <span class="quote-mark">"</span>
+        <div class="voice-text">Stablecoin payments solved the slow, expensive traditional problem. Real-time settlement gives us confidence in emerging markets.</div>
+        <div class="voice-source">
+          <div class="voice-company">Cross-border Trade</div>
+          <div class="voice-role">CFO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOLUTIONS ── -->
+<section class="solutions" id="solutions">
+  <div class="wrap">
+    <div class="sh">
+      <div class="ey">Solutions</div>
+      <h2>Industry-Specific Payment Solutions</h2>
+      <p>Deep cross-border expertise, solving each industry's unique challenges.</p>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active">Commodities</div>
+      <div class="sol-tab">Digital Services</div>
+      <div class="sol-tab">General Trade</div>
+      <div class="sol-tab">B2B E-commerce</div>
+      <div class="sol-tab">Web3</div>
+      <div class="sol-tab">AI Apps</div>
+    </div>
+    <div class="sol-grid">
+      <div class="sol-card">
+        <div class="sol-head">
+          <div class="sol-icon">📊</div>
+          <div class="sol-name">Commodities Trading</div>
+        </div>
+        <div class="sol-body">FX volatility impacts margins. Paiera provides 24/7 rate lock and compliant fund channels.</div>
+        <div class="sol-features">
+          <div class="sf"><strong>Rate Lock</strong><span>Hedge global FX risk</span></div>
+          <div class="sf"><strong>Compliance</strong><span>Transparent large transfers</span></div>
+        </div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-head">
+          <div class="sol-icon">🛒</div>
+          <div class="sol-name">B2B E-commerce</div>
+        </div>
+        <div class="sol-body">Multi-currency across systems drives costs up. One platform—team focuses on growth.</div>
+        <div class="sol-features">
+          <div class="sf"><strong>Full-chain</strong><span>All fund flows, one platform</span></div>
+          <div class="sf"><strong>Corporate Cards</strong><span>24/7 stable for procurement &amp; ads</span></div>
+        </div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-head">
+          <div class="sol-icon">🔗</div>
+          <div class="sol-name">Web3 Ecosystem</div>
+        </div>
+        <div class="sol-body">Fiat-crypto bridge, global payroll, community assets. Lightweight API for quick launch.</div>
+        <div class="sol-features">
+          <div class="sf"><strong>CaaS</strong><span>Quick flat-crypto integration</span></div>
+          <div class="sf"><strong>Community Finance</strong><span>Payroll &amp; asset operations</span></div>
+        </div>
+      </div>
+      <div class="sol-card" style="border-color:rgba(124,92,246,.25);">
+        <div class="sol-head">
+          <div class="sol-icon" style="background:rgba(124,92,246,.15);border-color:rgba(124,92,246,.25);">🤖</div>
+          <div class="sol-name">AI Applications</div>
+        </div>
+        <div class="sol-body">Agent payments need compliance and speed. 24/7 automated settlement within security guardrails.</div>
+        <div class="sol-features">
+          <div class="sf"><strong>Autonomous</strong><span>No human intervention needed</span></div>
+          <div class="sf"><strong>Guardrails</strong><span>Programmable auth, fully compliant</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div class="wrap">
+    <div class="about-inner">
+      <div class="ey" style="justify-content:center;">About</div>
+      <h2>Reshaping Capital Efficiency</h2>
+      <p>Paiera is a stablecoin-native payment infrastructure company—new rails for the human-AI payment era. We serve enterprises, users, and agents with integrated global payments, digital cards, and AI payment capabilities.</p>
+      <p>Our team brings deep global payment expertise: cross-border clearing, stablecoin compliance, emerging market frameworks. Licensed across North America, Middle East, Asia-Pacific, and Europe.</p>
+      <div class="about-pillars">
+        <div class="pillar">
+          <div class="pillar-val">B2B</div>
+          <div class="pillar-lab">Enterprises &amp; Exchanges</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-val">B2C</div>
+          <div class="pillar-lab">Digital Asset Users</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-val">Agent</div>
+          <div class="pillar-lab">AI Agent Payments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-inner">
+      <div>
+        <div class="ey">Contact</div>
+        <h2>Start a Conversation</h2>
+        <p>Exchange, enterprise, or AI developer—we'd love to connect.</p>
+        <div class="contact-items">
+          <div class="ci"><div class="ci-icon">✉️</div><div class="ci-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ceada1a0baafadba8ebeafa7abbcafe0afa7">[email&#160;protected]</a></div></div>
+          <div class="ci"><div class="ci-icon">🌐</div><div class="ci-text">paiera.ai</div></div>
+          <div class="ci"><div class="ci-icon">📍</div><div class="ci-text">Global Operations</div></div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <input class="cf-field" type="text" placeholder="Your name">
+        <input class="cf-field" type="email" placeholder="Email address">
+        <input class="cf-field" type="text" placeholder="Company">
+        <textarea class="cf-field ta" placeholder="Tell us about your needs..."></textarea>
+        <a href="/cdn-cgi/l/email-protection#c3a0acadb7a2a0b783b3a2aaa6b1a2eda2aa" class="btn btn-grad" style="justify-content:center;">Send Message</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="wrap">
+    <div class="footer-in">
+      <div>
+        <a class="footer-logo" href="#">Paiera</a>
+        <div class="footer-tagline">Pay · AI · Era — New infrastructure for the human-AI payment era. Stablecoin-native platform, driving borderless capital flow.</div>
+      </div>
+      <div class="footer-links">
+        <a href="#">Products</a>
+        <a href="#">Solutions</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <span>© 2026 Paiera. All rights reserved.</span>
+      <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afccc0c1dbceccdbefdfcec6caddce81cec6">[email&#160;protected]</a></span>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Tab switching
+document.querySelectorAll('.sol-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.sol-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+// Lang toggle
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
